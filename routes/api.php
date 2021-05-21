@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthUserController;
+use App\Models\Profile;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,13 +17,16 @@ use App\Http\Controllers\AuthUserController;
 |
 */
 
+// Route::apiResource('/profile', ProfileController::class);
+
 Route::post('/auth/register', [AuthUserController::class, 'store']);
 Route::post('/auth/login', [AuthUserController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/user', [AuthUserController::class, 'show']);
-    Route::patch('/user', [AuthUserController::class, 'update']);
+    Route::get('/auth/profile', [AuthUserController::class, 'show']);
+    Route::patch('/auth/profile', [AuthUserController::class, 'update']);
     Route::post('/auth/logout', [AuthUserController::class, 'logout']);
+
+    Route::post('/auth/profile/billing', [ProfileController::class, 'store']);
 });
 
-Route::apiResource('/profile', ProfileController::class);

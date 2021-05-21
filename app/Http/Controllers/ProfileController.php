@@ -39,14 +39,18 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validatedData = $request->validate([
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
-            'vat' => 'required|max:255',
+            'vat' => 'required|unique:profiles|max:255',
             'addres' => 'required|max:255',
-            'phone' => 'required|unique|max:255',
-            'zip_code' => 'requiredmax:255',
+            'phone' => 'required|unique:profiles|max:255',
+            'zip_code' => 'required|max:255',
         ]);
+
+        $profile = $request->user()->profile()->create($validatedData);
+
+        return response()->json($profile);
 
     }
 

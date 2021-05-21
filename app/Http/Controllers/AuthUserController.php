@@ -29,7 +29,7 @@ class AuthUserController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|max:255',
         ]);
 
@@ -122,7 +122,7 @@ class AuthUserController extends Controller
             $token = $user->createToken($validatedData['password']);
             return response()->json([
                 'token' => $token->plainTextToken
-            ]);
+            ], 200);
         }
     }
 

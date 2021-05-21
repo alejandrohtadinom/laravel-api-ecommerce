@@ -5,6 +5,7 @@
 /vendor
 .env
 .env.backup
+TODO.org
 REST
 .phpunit.result.cache
 docker-compose.override.yml
