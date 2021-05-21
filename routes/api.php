@@ -28,5 +28,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/auth/logout', [AuthUserController::class, 'logout']);
 
     Route::post('/auth/profile/billing', [ProfileController::class, 'store']);
+    Route::get('/auth/profile/billing', [ProfileController::class, 'show']);
 });
 
