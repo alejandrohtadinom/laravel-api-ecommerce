@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthUserController;
-use App\Models\Profile;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,5 +27,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('/auth/profile/billing', [ProfileController::class, 'store']);
     Route::get('/auth/profile/billing', [ProfileController::class, 'show']);
+    Route::patch('/auth/profile/billing', [ProfileController::class, 'update']);
+    Route::delete('/auth/profile/billing', [ProfileController::class, 'destroy']);
 });
 

@@ -76,15 +76,10 @@ class AuthUserController extends Controller
             'password' => 'confirmed',
         ]);
 
-        // $obj_user = User::find($user->id);
-        // $obj_user->fill($validatedData);
-        // $obj_user->save();
-
         $user->fill($validatedData);
         $user->save();
 
         return response()->json($user);
-
     }
 
     /**

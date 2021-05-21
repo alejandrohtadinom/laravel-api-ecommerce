@@ -50,7 +50,7 @@ class ProfileController extends Controller
 
         $profile = $request->user()->profile()->create($validatedData);
 
-        return response()->json($profile);
+        return response()->json($profile, 200);
 
     }
 
@@ -64,7 +64,7 @@ class ProfileController extends Controller
     {
         $profile = $request->user()->profile;
 
-        return response()->json($profile);
+        return response()->json($profile, 200);
     }
 
     /**
@@ -74,9 +74,24 @@ class ProfileController extends Controller
      * @param  \App\Models\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Profile $profile)
+    public function update(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'vat' => 'string|max:255',
+            'addres' => 'string|max:255',
+            'phone' => 'string|max:255',
+            'zip_code' => 'string|max:255',
+        ]);
+
+        // $profile = $request->user()->profile()->save($validatedData);
+        // $profile->save();
+
+        $profile = $request->user()->profile;
+        $profile->fill($validatedData);
+        $profile->save();
+        return response()->json($profile, 200);
     }
 
     /**
@@ -85,8 +100,11 @@ class ProfileController extends Controller
      * @param  \App\Models\Profile  $profile
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Profile $profile)
+    public function destroy(Request $request)
     {
-        //
+        $profile = $request->user()->profile;
+        $profile->delete();
+
+        return response()->json($profile, 200);
     }
 }
