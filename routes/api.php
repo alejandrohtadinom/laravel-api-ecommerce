@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,8 +16,13 @@ use App\Http\Controllers\ProfileController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/auth/register', [AuthUserController::class, 'store']);
+Route::post('/auth/login', [AuthUserController::class, 'login']);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/user', [AuthUserController::class, 'show']);
+    Route::patch('/user', [AuthUserController::class, 'update']);
+    Route::post('/auth/logout', [AuthUserController::class, 'logout']);
 });
 
-Route::apiResource('/profile', 'ProfileController');
+Route::apiResource('/profile', ProfileController::class);

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ProfileController extends Controller
 {
@@ -27,7 +26,9 @@ class ProfileController extends Controller
             'message' => 'this is the index method',
         ];
 
-        return response($data);
+        return response()->json([
+            $data
+        ], 200);
     }
 
     /**
@@ -38,7 +39,15 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'first_name' => 'required|max:255',
+            'last_name' => 'required|max:255',
+            'vat' => 'required|max:255',
+            'addres' => 'required|max:255',
+            'phone' => 'required|unique|max:255',
+            'zip_code' => 'requiredmax:255',
+        ]);
+
     }
 
     /**

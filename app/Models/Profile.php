@@ -19,6 +19,7 @@ class Profile extends Model
         'last_name',
         'vat',
         'addres',
+        'phone',
         'zip_code',
     ];
 
