@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthUserController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,7 @@ use App\Http\Controllers\AuthUserController;
 
 Route::post('/auth/register', [AuthUserController::class, 'store']);
 Route::post('/auth/login', [AuthUserController::class, 'login']);
+Route::get('/product', [ProductController::class, 'index']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/auth/profile', [AuthUserController::class, 'show']);
@@ -29,5 +31,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/auth/profile/billing', [ProfileController::class, 'show']);
     Route::patch('/auth/profile/billing', [ProfileController::class, 'update']);
     Route::delete('/auth/profile/billing', [ProfileController::class, 'destroy']);
+
+    Route::post('/product', [ProductController::class, 'store']);
+    Route::patch('/product', [ProductController::class, 'update']);
+    Route::delete('/product', [ProductController::class, 'destroy']);
 });
 
