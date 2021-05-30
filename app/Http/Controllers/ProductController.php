@@ -14,6 +14,9 @@ class ProductController extends Controller
      */
     public function index()
     {
+        /*
+         * TODO: Listar solo los que esten activos
+         */
         $products = Product::all();
         return response()->json($products);
     }
@@ -34,6 +37,8 @@ class ProductController extends Controller
                 'name' => 'required|string|max:100',
                 'description' => 'required|string|max:255',
                 'price' => 'required|numeric',
+                'qty_available' => 'required|numeric|min:1',
+                'qty_active' => 'required|numeric',
             ]);
 
             $product = Product::create($validatedData);
@@ -59,7 +64,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        /**
+        /*
          * TODO
          * Es necesaria una vista para los detalles del producto?
          * en esta vista se deben mostrar
@@ -88,8 +93,6 @@ class ProductController extends Controller
                 'description' => 'string|max:255',
                 'price' => 'numeric',
             ]);
-
-            // $product = Product::create($validatedData);
 
             $product = Product::find($validatedData['id']);
             $product->fill($validatedData);

@@ -19,6 +19,9 @@ class CreateProductsTable extends Migration
             $table->text('description');
             $table->string('slug')->nullable();
             $table->decimal('price');
+            $table->unsignedBigInteger('qty_available');
+            $table->unsignedBigInteger('qty_active');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

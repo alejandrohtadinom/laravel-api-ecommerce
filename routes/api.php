@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthUserController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 
 /*
@@ -35,5 +36,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/product', [ProductController::class, 'store']);
     Route::patch('/product', [ProductController::class, 'update']);
     Route::delete('/product', [ProductController::class, 'destroy']);
+
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::patch('/cart', [CartController::class, 'update']);
+    Route::delete('/cart', [CartController::class, 'destroy']);
 });
 
