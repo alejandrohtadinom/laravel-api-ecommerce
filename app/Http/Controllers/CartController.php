@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Resources\CartCollection;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -16,12 +18,11 @@ class CartController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $cart = $user->cart;
-        $obj = new Cart();
+        $cart = CartCollection::collection(Cart::where('user_id', $user->id)->get());
 
         $response = [
             'cart' => $cart,
-            'total' => $obj->total($cart)
+            'total' => Cart::total($cart)
         ];
 
         return response()->json($response, 200);
@@ -38,21 +39,44 @@ class CartController extends Controller
         $user = $request->user();
 
         $validatedData = $request->validate([
-            'id' => 'required|integer|gt:0',
-            'qty' => 'required|integer|gte:1',
+            'product' => 'required|array',
+            'product.*.id' => 'required|integer',
+            'product.*.qty' => 'required|integer',
         ]);
 
-        $product = Product::findOrFail($validatedData['id']);
+        $items = [];
 
-        $cart = $user->cart()->create([
-            'user_id' => $user->id,
-            'product_id' => $product->id,
-            'price' => $product->price,
-            'qty' => $validatedData['qty'],
-            'sub_total' => $product->price * $validatedData['qty'],
-        ]);
+        foreach($validatedData['product'] as $i => $product) {
 
-        return response()->json($cart, 201);
+                $obj = Product::find($product['id']);
+
+                $items[$i] = [
+                    'id' => $obj->id,
+                    'price' => $obj->price,
+                    'qty' => $product['qty'],
+                    'sub_total' => $obj->price * $product['qty']
+                ];
+        }
+
+        if (!($user->cart->first())) {
+            $cart = $user->cart()->create([
+                'user_id' => $user->id,
+                'product' => $items,
+                'sub_total' => Cart::total($items),
+            ]);
+        } else {
+            $cart = $user->cart->first();
+            foreach ($validatedData['product'] as $k => $v) {
+                foreach ($cart->product as $i => $j) {
+                    if ($v['id'] == $j['id']) {
+                        $j['qty'] = $v['qty'];
+                    }
+
+                }
+            }
+        }
+
+        return response()->json($cart);
     }
 
     /**
@@ -86,15 +110,31 @@ class CartController extends Controller
         $cart = $user->cart()->find($validatedData['id']);
         $product = Product::findOrFail($validatedData['product_id']);
 
-        $cart->fill([
-            'product_id' => $product->id,
-            'qty' => $validatedData['product_id'],
-            'sub_total' => $product->price * $validatedData['qty'],
-        ]);
+        if ($product->active) {
 
-        $cart->save();
+            $cart->fill([
+                'product_id' => $product->id,
+                'qty' => $validatedData['qty'],
+                'sub_total' => $product->price * $validatedData['qty'],
+            ]);
 
-        return response()->json($cart, 200);
+            $cart->save();
+
+            $obj = new CartCollection(Cart::find($cart->id));
+
+            $response = [
+                'cart' => $obj,
+            ];
+
+            return response()->json($response, 200);
+        }
+
+            $response = [
+                'cart' => 'El producto seleccionado ya no esta disponible',
+            ];
+
+            return response()->json($response, 404);
+
     }
 
     /**
@@ -103,8 +143,17 @@ class CartController extends Controller
      * @param  \App\Models\Cart  $cart
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Cart $cart)
+    public function destroy(Request $request)
     {
-        //
+        $user = $request->user();
+
+        $validatedData = $request->validate([
+            'id' => 'required|integer|gte:1',
+        ]);
+
+        $cart = $user->cart()->findOrFail($validatedData['id']);
+        $cart->delete();
+
+        return response()->json($cart);
     }
 }

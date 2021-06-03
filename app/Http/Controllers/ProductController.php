@@ -14,10 +14,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        /*
-         * TODO: Listar solo los que esten activos
-         */
-        $products = Product::all();
+        $products = Product::where('active', true)
+                  ->where('qty_active', '>=', 1)
+                  ->get();
+
         return response()->json($products);
     }
 
@@ -83,6 +83,14 @@ class ProductController extends Controller
      */
     public function update(Request $request)
     {
+        /*
+         * TODO
+         * Actualizar las validaciones para los campos nuevos
+         * - Cantidades en inventario
+         * - Cantidades activas /disponibles para la venta
+         * - Precios
+         */
+
         $user = $request->user();
 
         if ($user->admin) {

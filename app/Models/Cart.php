@@ -9,17 +9,13 @@ class Cart extends Model
 {
     use HasFactory;
 
-    // protected $casts = [
-    //     'producst' => AsArrayObject::class,
-    // ];
+    protected $casts = [
+        'product' => 'array',
+    ];
 
     protected $fillable = [
         'user_id',
-        'product_id',
-        'name',
-        'description',
-        'price',
-        'qty',
+        'product',
         'sub_total'
     ];
 
@@ -28,17 +24,28 @@ class Cart extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function product()
+    // public function product()
+    // {
+    //     return $this->hasOne(Product::class);
+    // }
+
+    public function sub_total($item)
     {
-        return $this->hasOne(Product::class);
+       return $item->price * $item->qty;
     }
 
-    public function total($carts)
+    /**
+     * Return total value of the current cart
+     *
+     * @item array
+     * @return float
+     * */
+    public static function total(Array $item)
     {
         $total = 0.0;
 
-        foreach ($carts as $cart) {
-            $total += $cart->sub_total;
+        foreach ($item as $i) {
+            $total += $i['sub_total'];
         }
 
         return $total;
