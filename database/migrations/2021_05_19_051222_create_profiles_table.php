@@ -18,10 +18,12 @@ class CreateProfilesTable extends Migration
             $table->foreignId('user_id')->onUpdate('cascade')->onDelete('cascade');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('vat');
+            $table->foreignId('document_type_id');
+            $table->bigInteger('vat');
             $table->string('addres');
-            $table->string('phone');
-            $table->string('zip_code');
+            $table->foreignId('phone_prefix_id');
+            $table->bigInteger('phone');
+            $table->mediumInteger('zip_code');
             $table->timestamps();
         });
     }

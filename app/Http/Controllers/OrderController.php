@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -14,7 +15,14 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $user = request()->user();
+        $order = $user->orders()->get();
+
+        $response = [
+            'orders' => $order,
+        ];
+
+        return response()->json($response);
     }
 
     /**
@@ -26,15 +34,36 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
+        $cart = $user->cart()->first();
 
-        $validatedData = $request->validate([
-            // Cart data
-            'cart_id' => 'reuquired|integer|gte1',
-            // Customer data
-            'profile_id' => 'reuquired|integer|gte1',
+        $items = $cart->items()->get();
+
+        if (!$user->profile()->first()) {
+            return response()->json([
+                'message' => 'debes tener un perfil de facturacion',
+            ]);
+
+        } else {
+
+            foreach ($items as $item) {
+               $product = Product::find($item->product_id);
+               $product->qty_active -= $item->qty;
+               $product->save();
+            }
+        }
+
+        $order = $user->orders()->create([
+            'items' => $items,
+            'total' => $cart->cart_sub_total,
         ]);
 
-        $cart_items = $user->cart;
+        $cart->delete();
+
+        $response = [
+            'order' => $order,
+        ];
+
+        return response()->json($response);
     }
 
     /**
@@ -45,29 +74,18 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        //
-    }
+        $user = request()->user();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Order $order)
-    {
-        //
-    }
+        $validatedData = request()->validate(([
+            'order_id' => 'required|integer|gte:0',
+        ]));
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Order $order)
-    {
-        //
+        $order = $user->order->find($validatedData['order_id']);
+
+        $response = [
+            'order' => $order,
+        ];
+
+        return response()->json($response);
     }
 }
