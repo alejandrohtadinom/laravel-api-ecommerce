@@ -1,4 +1,4 @@
-<?php
+onUpdate('cascade')-><?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,7 +15,7 @@ class CreateProfilesTable extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->onDelete('cascade');
             $table->string('first_name');
             $table->string('last_name');
             $table->foreignId('document_type_id');
