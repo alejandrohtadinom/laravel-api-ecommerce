@@ -18,11 +18,21 @@ class Cart extends Model
         'sub_total'
     ];
 
+    /**
+     * Return the owner of the cart
+     *
+     * @return Illuminate\Database\Eloquent\Relation\belongsTo User
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Return items in the cart
+     *
+     * @return Illuminate\Database\Eloquent\Relation\hasMany CarItem
+     */
     public function items()
     {
         return $this->hasMany(CartItem::class);
@@ -39,7 +49,7 @@ class Cart extends Model
      * @item array
      * @return float
      * */
-    public static function total(Array $item) :float
+    public static function total(array $item): float
     {
         $total = 0.0;
 

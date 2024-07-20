@@ -22,7 +22,8 @@ class CreateProductsTable extends Migration
             $table->unsignedBigInteger('qty_available');
             $table->unsignedBigInteger('qty_active');
             $table->boolean('active')->default(true);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
         });
     }
 

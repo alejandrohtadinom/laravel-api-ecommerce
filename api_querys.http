@@ -1,0 +1,14 @@
+# First endpoint: this is used to test the server api
+GET http://localhost:8000/api/product/
+accept: application/json
+
+###
+
+POST http://localhost:8000/api/auth/login
+content-type: application/json
+accept: application/json
+
+{
+        "email": "test1@domain.com",
+        "password": "12345"
+}

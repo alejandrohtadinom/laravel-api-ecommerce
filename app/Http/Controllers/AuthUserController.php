@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthUserController extends Controller
 {
@@ -22,29 +23,37 @@ class AuthUserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     *  @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|confirmed|max:255',
-        ]);
+        $validatedData = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users|max:255',
+                'password' => 'required|confirmed|max:255',
+            ]
+        );
 
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
-        ]);
+        $user = User::create(
+            [
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
+            ]
+        );
 
         $token = $user->createToken($validatedData['password']);
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token->plainTextToken
-        ], 201);
+        return response()->json(
+            [
+                'user' => $user,
+                'token' => $token->plainTextToken
+            ],
+            201
+        );
     }
 
     /**
@@ -62,8 +71,9 @@ class AuthUserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\User $user
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, User $user)
@@ -85,7 +95,7 @@ class AuthUserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
@@ -98,40 +108,52 @@ class AuthUserController extends Controller
     /**
      * Login the user.
      *
-     * @param  \App\Models\User  $user
+     * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function login(Request $request)
     {
-        $validatedData = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $validatedData = $request->validate(
+            [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]
+        );
 
         if (!Auth::attempt($validatedData)) {
-            return response()->json([
-                'error' => 'Invalid credentials'
-            ]);
+            return response()->json(
+                [
+                    'error' => 'Invalid credentials'
+                ],
+                401
+            );
         } else {
             $user = Auth::user();
-            $token = $user->createToken($validatedData['password']);
-            return response()->json([
-                'token' => $token->plainTextToken
-            ], 200);
+            $token = $user->createToken($validatedData['password'])->plainTextToken;
+            return response()->json(
+                [
+                    'token' => $token,
+                ],
+                200
+            );
         }
     }
 
     /**
      * Logout the user.
      *
-     * @param  \App\Models\User  $user
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
-        return response()->json([
-            'message' => 'Loged out'
-        ], 200);
+        return response()->json(
+            [
+                'message' => 'Loged out'
+            ],
+            205
+        );
     }
 }

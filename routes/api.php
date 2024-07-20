@@ -8,15 +8,6 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 
 /*
-|------------
-use App\Http\Controllers\OrderController;
--------------------------------------------------------------
-| A
-use App\Http\Controllers\OrderController;
-I Routes
-|-------------------------------------------------------
-use App\Http\Controllers\OrderController;
-------------------
 |
 | Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
