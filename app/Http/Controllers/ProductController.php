@@ -10,21 +10,30 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request http request payload
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
         $products = Product::where('active', true)
-                  ->where('qty_active', '>=', 1)
-                  ->get();
+            ->where('qty_active', '>=', 1)
+            ->get();
 
-        return response()->json($products);
+        if ($request->user()) {
+            # TODO: Add promo if the user us logged in
+            return response()->json($products, 200);
+        } else {
+            return response()->json($products, 200);
+        }
+
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -33,13 +42,15 @@ class ProductController extends Controller
 
         if ($user->admin) {
 
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:100',
-                'description' => 'required|string|max:255',
-                'price' => 'required|numeric',
-                'qty_available' => 'required|numeric|min:1',
-                'qty_active' => 'required|numeric',
-            ]);
+            $validatedData = $request->validate(
+                [
+                    'name' => 'required|string|max:100',
+                    'description' => 'required|string|max:255',
+                    'price' => 'required|numeric',
+                    'qty_available' => 'required|numeric|min:1',
+                    'qty_active' => 'required|numeric',
+                ]
+            );
 
             $product = Product::create($validatedData);
 
@@ -47,11 +58,12 @@ class ProductController extends Controller
 
         } else {
 
-            $message = [
-                'message' => 'Unauthorize resource',
-            ];
-
-            return response()->json($message, 403);
+            return response()->json(
+                [
+                    'message' => 'Unauthorize resource'
+                ],
+                403
+            );
 
         }
     }
@@ -95,12 +107,17 @@ class ProductController extends Controller
 
         if ($user->admin) {
 
-            $validatedData = $request->validate([
-                'id' => 'required|numeric',
-                'name' => 'string|max:100',
-                'description' => 'string|max:255',
-                'price' => 'numeric',
-            ]);
+            $validatedData = $request->validate(
+                [
+                    'id' => 'required|numeric',
+                    'name' => 'string|max:100',
+                    'description' => 'string|max:255',
+                    'slug' => 'string|max:255',
+                    'price' => 'numeric',
+                    'qtty_available' => 'numeric',
+                    'qtty_active' => 'numeric'
+                ]
+            );
 
             $product = Product::find($validatedData['id']);
             $product->fill($validatedData);
@@ -122,24 +139,39 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request http request payload
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): \Illuminate\Http\JsonResponse
     {
-        $user = $request->user();
+        if ($request->user()->is_admin()) {
 
-        if ($user->admin) {
-
-            $validatedData = $request->validate([
-                'id' => 'required|numeric',
-            ]);
+            $validatedData = $request->validate(
+                [
+                    'id' => 'required|numeric',
+                ]
+            );
 
             $product = Product::find($validatedData['id']);
-            $product->delete($validatedData);
 
-            return response()->json($product);
+            if (!$product) {
+                return response()->json(
+                    [
+                        'error' => 'Resource not found',
+                    ],
+                    404
+                );
+            }
+
+            $product->delete();
+
+            return response()->json(
+                [
+                    'message' => 'Resource deleted',
+                ],
+                405
+            );
 
         } else {
 

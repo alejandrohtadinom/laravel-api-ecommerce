@@ -1,14 +1,114 @@
-# First endpoint: this is used to test the server api
-GET http://localhost:8000/api/product/
-accept: application/json
+@AUTH_TOKEN="1|R1URBFb8Vr31yoRHkdnXxWYZ7hmuOHoT1KGZYRl1e3cea1f0"
+@BASE_URL="http://localhost:8000/api"
+@HTTP="HTTP/1.1"
 
 ###
 
-POST http://localhost:8000/api/auth/login
+GET {{BASE_URL}}/product/
+accept: application/json
+# First endpoint: this is used to test the server api
+
+###
+
+POST {{BASE_URL}}/auth/login
 content-type: application/json
 accept: application/json
 
 {
-        "email": "test1@domain.com",
-        "password": "12345"
+    "email": "test1@domain.com",
+    "password": "12345"
+}
+
+###
+
+# Get products authenticated
+GET {{BASE_URL}}/product/
+content-type: application/json
+accept: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+###
+
+# Create products
+POST {{BASE_URL}}/product/
+content-type: application/json
+accept: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+    "name": "Perro Senciilo",
+    "description": "Pan de perro pequeño, salchicha alimex de pollo, papas, salsas basicas, queso chedar",
+    "price": 1.50,
+    "qty_available": 100,
+    "qty_active": 50
+}
+
+###
+
+# Update products
+PATCH {{BASE_URL}}/product/
+content-type: application/json
+accept: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+    "id": 4,
+    "name": "Perro Sencillo",
+    "description": "Pan de perro pequeño, salchicha alimex de pollo, papas, salsas basicas, queso chedar",
+    "slug": "perro-sencillo",
+    "price": 1.00,
+    "qty_available": 50,
+    "qty_active": 20
+}
+
+###
+
+# Delete products
+DELETE {{BASE_URL}}/product/
+content-type: application/json
+accept: application/json
+Authorization: Bearer {{AUTH_TOKEN}}
+
+{
+    "id": 4,
+    "name": "Perro Sencillo",
+    "description": "Pan de perro pequeño, salchicha alimex de pollo, papas, salsas basicas, queso chedar",
+    "slug": "perro-sencillo",
+    "price": 1.00,
+    "qty_available": 50,
+    "qty_active": 20
+}
+
+###
+
+# Create user client
+# Change the AUTH_TOKEN
+POST {{BASE_URL}}/auth/register
+content-type: application/json
+accept: application/json
+
+{
+    "name": "user2",
+    "email": "test2@domain.com",
+    "password": "12345"
+}
+
+###
+
+# Fetch products as client
+GET {{BASE_URL}}/product
+content-type: application/json
+accept: application/json
+
+###
+
+# Create user Billing profile
+POST {{BASE_URL}}/auth/profile/billing/
+content-type: application/json
+accept: application/json
+
+{
+    "name": "user2",
+    "email": "test2@domain.com",
+    "password": "12345"
 }
