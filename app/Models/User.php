@@ -49,23 +49,48 @@ class User extends Authenticatable
      *
      * @return Illuminate\Database\Eloquent\Relations\HasOne Profile
      */
-    public function profile()
+    public function profile(): Profile
     {
         return $this->hasOne(Profile::class);
     }
 
-    public function cart()
+    /**
+     * Returns the billing profile assosiate to the user
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasOne Cart
+     */
+    public function cart(): Cart
     {
         return $this->hasOne(Cart::class);
     }
 
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function is_admin()
+    /**
+     * Return true if the current user is admin
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
     {
         return $this->admin;
+    }
+
+    /**
+     * Return true if the current user is staff
+     *
+     * @return bool
+     */
+    public function isStaff(): bool
+    {
+        return $this->staff;
+    }
+
+    /**
+     * Return true if the current user is supplyer
+     *
+     * @return bool
+     */
+    public function isSupplyer(): bool
+    {
+        return $this->supplyer;
     }
 }
